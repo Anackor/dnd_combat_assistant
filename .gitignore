@@ -1,0 +1,9 @@
+# .gitignore
+__pycache__/
+*.pyc
+.venv/
+dnd_data.db
+*.log
+.vscode/
+dist/
+build/
