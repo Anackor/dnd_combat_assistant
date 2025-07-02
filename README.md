@@ -25,3 +25,19 @@ This is a local desktop application built with Python for helping Game Masters r
     ```sh
     .venv\Scripts\Activate.ps1
     ```
+    ```sh Required Launch Tests
+    pip install pytest
+    ```
+    ```sh Launch Tests
+    pytest
+    ```
+    ```sh Launch App
+    python main.py
+    ```
+
+    ```sh Create PJ with CLI
+    python -m app.cli create-character --name "Torm" --max-hp 50 --current-hp 50 --ca-def 20 --ref-def 18 --fort-def 19 --vol-def 17
+    ```
+    ```sh List Characters
+    python -m app.cli list-characters
+    ```
