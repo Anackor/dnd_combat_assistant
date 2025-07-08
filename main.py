@@ -1,4 +1,14 @@
 import sys
+from PySide6.QtWidgets import QApplication
+from app.ui.config_window import ConfigWindow
+from app.ui.controllers.config_controller import ConfigController
+
+def run_app():
+    app = QApplication(sys.argv)
+    controller = ConfigController()
+    window = ConfigWindow(controller)
+    window.show()
+    sys.exit(app.exec_())
 
 def main():
     if len(sys.argv) > 1:
@@ -7,7 +17,6 @@ def main():
         cli_main()
     else:
         # Ejecutar GUI
-        from app.ui.config_window import run_app
         run_app()
 
 if __name__ == "__main__":

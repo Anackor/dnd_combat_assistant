@@ -1,8 +1,10 @@
 from app.services.character_service import CharacterService
+from app.infrastructure.db.database import SessionLocal
 
 class ConfigController:
     def __init__(self):
-        self.character_service = CharacterService()
+        db = SessionLocal()
+        self.character_service = CharacterService(db)
 
     def get_all_characters(self):
         return self.character_service.list_characters()
