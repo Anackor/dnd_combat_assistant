@@ -1,5 +1,7 @@
+from sqlalchemy import Column, Integer, String, Enum
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import Column, Integer, String
+from app.infrastructure.db.models.enums import CharacterType
 
 Base = declarative_base()
 
@@ -14,3 +16,4 @@ class Character(Base):
     ref_def = Column(Integer, nullable=False)
     fort_def = Column(Integer, nullable=False)
     vol_def = Column(Integer, nullable=False)
+    type = Column(Enum(CharacterType), nullable=False, default=CharacterType.NPC)
