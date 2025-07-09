@@ -8,7 +8,7 @@ def run_app():
     controller = ConfigController()
     window = ConfigWindow(controller)
     window.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 def main():
     if len(sys.argv) > 1:
