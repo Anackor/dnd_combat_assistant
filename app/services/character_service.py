@@ -12,6 +12,9 @@ class CharacterService:
         self.db.refresh(character)
         return character
 
+    def update(self, character):
+        self.db.commit()
+
     def list_all(self) -> list[Character]:
         return self.db.query(Character).all()
 
