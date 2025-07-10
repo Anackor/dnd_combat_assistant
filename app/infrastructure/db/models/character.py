@@ -1,9 +1,7 @@
 from sqlalchemy import Column, Integer, String, Enum
-from sqlalchemy.orm import declarative_base
+from app.infrastructure.db.database import Base
 from sqlalchemy import Column, Integer, String
 from app.infrastructure.db.models.enums import CharacterType
-
-Base = declarative_base()
 
 class Character(Base):
     __tablename__ = "characters"

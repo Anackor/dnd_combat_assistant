@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.infrastructure.db.models import Character
+from app.infrastructure.db.models.character import Character
 
 class CharacterService:
     def __init__(self, db: Session):
@@ -11,6 +11,9 @@ class CharacterService:
         self.db.commit()
         self.db.refresh(character)
         return character
+
+    def update(self, character):
+        self.db.commit()
 
     def list_all(self) -> list[Character]:
         return self.db.query(Character).all()
