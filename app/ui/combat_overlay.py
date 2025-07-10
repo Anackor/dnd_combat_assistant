@@ -53,7 +53,7 @@ class CombatOverlay(QDialog):
         current_hp_input = QLineEdit(str(char.current_hp))
         current_hp_input.setFixedWidth(40)
         current_hp_input.editingFinished.connect(
-            lambda: self.update_current_hp(char, current_hp_input.text())
+            lambda: self.update_hp(char, current_hp_input)
         )
         layout.addWidget(current_hp_input)
 
