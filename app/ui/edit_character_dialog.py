@@ -1,7 +1,10 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QListWidget, QPushButton, QWidget
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QListWidget, QPushButton
+from PySide6.QtCore import Signal
 from app.ui.widgets.character_form import CharacterForm
 
 class EditCharactersDialog(QDialog):
+    character_updated = Signal()
+
     def __init__(self, controller, parent=None):
         super().__init__(parent)
         self.controller = controller
@@ -55,6 +58,7 @@ class EditCharactersDialog(QDialog):
                 setattr(self.selected_character, k, v)
             self.controller.update_character(self.selected_character)
             self.load_characters()
+            self.character_updated.emit() 
 
     def delete_character(self):
         if self.selected_character:
@@ -62,6 +66,6 @@ class EditCharactersDialog(QDialog):
             self.selected_character = None
             self.character_form.clear()
             self.character_form.setDisabled(True)
-            self.save_button.setVisible(False)
             self.delete_button.setVisible(False)
             self.load_characters()
+            self.character_updated.emit()

@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGroupBox
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGroupBox, QListWidget, QListWidgetItem
 )
 from PySide6.QtCore import Slot
 from app.ui.widgets.character_form import CharacterForm
@@ -16,6 +16,7 @@ class ConfigWindow(QWidget):
         self.setLayout(self.main_layout)
 
         self.init_character_management_ui()
+        self.init_character_selection_ui()
 
     def init_character_management_ui(self):
         group_box = QGroupBox("Character Management")
@@ -33,10 +34,49 @@ class ConfigWindow(QWidget):
         group_box.setLayout(layout)
         self.main_layout.addWidget(group_box)
 
+    def init_character_selection_ui(self):
+        group_box = QGroupBox("Select Characters for Combat")
+        layout = QVBoxLayout()
+
+        self.character_list = QListWidget()
+        self.character_list.setSelectionMode(QListWidget.MultiSelection)
+        self.selected_characters = []
+
+        self.load_character_list()
+
+        self.character_list.itemSelectionChanged.connect(self.handle_selection_changed)
+
+        layout.addWidget(self.character_list)
+        group_box.setLayout(layout)
+        self.main_layout.addWidget(group_box)
+
+    def load_character_list(self):
+        self.character_list.clear()
+        self.all_characters = self.controller.get_all_characters()
+        for char in self.all_characters:
+            text = (
+                f"{char.name} ({char.type.value})"
+                f" - HP: {char.current_hp}/{char.max_hp}, "
+                f"CA: {char.ca_def}, FORT: {char.fort_def}, REF: {char.ref_def}, WIL: {char.vol_def}"
+            )
+            item = QListWidgetItem(text)
+            item.setData(1000, char)
+            self.character_list.addItem(item)
+
+    def handle_selection_changed(self):
+        self.selected_characters = []
+        for item in self.character_list.selectedItems():
+            char = item.data(1000)
+            self.selected_characters.append(char)
+
+    def on_character_created(self):
+        self.load_character_list()
+
     @Slot()
     def open_create_form(self):
         def handle_submit(data):
             self.controller.create_character(data)
+            self.on_character_created()
             form.accept()
         form = CharacterForm(on_submit=handle_submit, parent=self)
         form.exec()
@@ -44,4 +84,5 @@ class ConfigWindow(QWidget):
     @Slot()
     def open_edit_form(self):
         dialog = EditCharactersDialog(self.controller, self)
+        dialog.character_updated.connect(self.load_character_list)
         dialog.exec()
