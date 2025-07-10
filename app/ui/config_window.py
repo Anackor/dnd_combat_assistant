@@ -1,9 +1,10 @@
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGroupBox, QListWidget, QListWidgetItem
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGroupBox, QListWidget, QListWidgetItem, QMessageBox
 )
-from PySide6.QtCore import Slot
+from PySide6.QtCore import (Slot, Qt)
 from app.ui.widgets.character_form import CharacterForm
 from app.ui.edit_character_dialog import EditCharactersDialog
+from app.ui.combat_overlay import CombatOverlay
 
 class ConfigWindow(QWidget):
     def __init__(self, controller):
@@ -17,6 +18,7 @@ class ConfigWindow(QWidget):
 
         self.init_character_management_ui()
         self.init_character_selection_ui()
+        self.init_combat_button_ui()
 
     def init_character_management_ui(self):
         group_box = QGroupBox("Character Management")
@@ -49,6 +51,11 @@ class ConfigWindow(QWidget):
         layout.addWidget(self.character_list)
         group_box.setLayout(layout)
         self.main_layout.addWidget(group_box)
+
+    def init_combat_button_ui(self):
+        self.open_overlay_button = QPushButton("Iniciar Combate")
+        self.open_overlay_button.clicked.connect(self.open_combat_overlay)
+        self.main_layout.addWidget(self.open_overlay_button)
 
     def load_character_list(self):
         self.character_list.clear()
@@ -86,3 +93,16 @@ class ConfigWindow(QWidget):
         dialog = EditCharactersDialog(self.controller, self)
         dialog.character_updated.connect(self.load_character_list)
         dialog.exec()
+
+    @Slot()
+    def open_combat_overlay(self):
+        selected_items = self.character_list.selectedItems()
+        if not selected_items:
+            QMessageBox.warning(self, "Aviso", "Debes seleccionar al menos un personaje.")
+            return
+
+        selected_characters = [item.data(1000) for item in selected_items if item.data(1000) is not None]
+
+        overlay = CombatOverlay(self.controller, selected_characters)
+        overlay.character_updated.connect(self.load_character_list)
+        overlay.exec()
