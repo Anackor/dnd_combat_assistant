@@ -37,7 +37,6 @@ class ConfigWindow(QWidget):
     def open_create_form(self):
         def handle_submit(data):
             self.controller.create_character(data)
-            print(f"Character created: {data['name']}")
             form.accept()
         form = CharacterForm(on_submit=handle_submit, parent=self)
         form.exec()
