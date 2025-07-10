@@ -1,5 +1,6 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QHBoxLayout, QWidget, QLineEdit
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QHBoxLayout, QWidget, QLineEdit, QSizePolicy
 from PySide6.QtCore import (Qt, Signal)
+from app.ui.widgets.expanding_text_edit import ExpandingTextEdit
 
 class CombatOverlay(QDialog):
     character_updated = Signal()
@@ -68,7 +69,13 @@ class CombatOverlay(QDialog):
             defense_input.setFixedWidth(25)
             layout.addWidget(defense_input)
 
+        effects_box = ExpandingTextEdit()
+        effects_box.resized.connect(lambda: card.updateGeometry())
+        layout.addWidget(effects_box)
+
         card.setLayout(layout)
+        effects_box.adjustHeight()
+
         return card
 
     def update_hp(self, char, hp_input):
