@@ -20,6 +20,7 @@ class ConfigWindow(QWidget):
         self.init_character_management_ui()
         self.init_character_selection_ui()
         self.init_combat_button_ui()
+        self.active_overlay = None
 
     def init_character_management_ui(self):
         group_box = QGroupBox("Character Management")
@@ -179,6 +180,15 @@ class ConfigWindow(QWidget):
             QMessageBox.warning(self, "Aviso", "Debes seleccionar al menos un personaje.")
             return
 
+        if self.active_overlay and self.active_overlay.isVisible():
+            self.active_overlay.raise_()
+            self.active_overlay.activateWindow()
+            return
+
         overlay = CombatOverlay(self.controller, self.selected_characters)
         overlay.character_updated.connect(self.load_character_tree)
-        overlay.exec()
+        overlay.finished.connect(lambda _: setattr(self, 'active_overlay', None))
+        self.active_overlay = overlay
+        overlay.show()
+        overlay.raise_()
+        overlay.activateWindow()

@@ -1,3 +1,4 @@
+import sys
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QHBoxLayout, QWidget, QLineEdit, QSizePolicy
 from PySide6.QtCore import (Qt, Signal)
 from app.ui.widgets.expanding_text_edit import ExpandingTextEdit
@@ -8,10 +9,20 @@ class CombatOverlay(QDialog):
     def __init__(self, controller, characters, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Combat Overlay")
-        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.Window)
+        flags = Qt.Window | Qt.WindowStaysOnTopHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint
+        self.setWindowFlags(flags)
+        self.setWindowModality(Qt.NonModal)
+        self.setAttribute(Qt.WA_TranslucentBackground, False)
         self.characters = characters
         self.controller = controller
         self.init_ui()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.raise_()
+        self.activateWindow()
+        self.setWindowFlag(Qt.WindowStaysOnTopHint, True)
+        self.setWindowState((self.windowState() & ~Qt.WindowMinimized) | Qt.WindowActive)
 
     def init_ui(self):
         layout = QVBoxLayout(self)
