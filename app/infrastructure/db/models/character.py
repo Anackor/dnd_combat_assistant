@@ -15,3 +15,4 @@ class Character(Base):
     fort_def = Column(Integer, nullable=False)
     vol_def = Column(Integer, nullable=False)
     type = Column(Enum(CharacterType), nullable=False, default=CharacterType.NPC)
+    folder = Column(String, nullable=True, default="Sin carpeta")

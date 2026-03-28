@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QListWidget, QPushButton
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QListWidget, QPushButton, QMessageBox
 from PySide6.QtCore import Signal
 from app.ui.widgets.character_form import CharacterForm
 
@@ -18,9 +18,12 @@ class EditCharactersDialog(QDialog):
         self.character_form.setDisabled(True)
         self.delete_button = QPushButton("Eliminar")
         self.delete_button.setVisible(False)
+        self.duplicate_button = QPushButton("Duplicar")
+        self.duplicate_button.setVisible(False)
 
         # Layout
         button_layout = QHBoxLayout()
+        button_layout.addWidget(self.duplicate_button)
         button_layout.addWidget(self.delete_button)
 
         right_layout = QVBoxLayout()
@@ -36,6 +39,7 @@ class EditCharactersDialog(QDialog):
         # Events
         self.list_widget.itemClicked.connect(self.load_character)
         self.delete_button.clicked.connect(self.delete_character)
+        self.duplicate_button.clicked.connect(self.duplicate_character)
 
         self.load_characters()
 
@@ -51,6 +55,7 @@ class EditCharactersDialog(QDialog):
         self.character_form.setDisabled(False)
         self.character_form.set_data(self.selected_character)
         self.delete_button.setVisible(True)
+        self.duplicate_button.setVisible(True)
 
     def save_changes(self, data):
         if self.selected_character:
@@ -60,6 +65,20 @@ class EditCharactersDialog(QDialog):
             self.load_characters()
             self.character_updated.emit() 
 
+    def duplicate_character(self):
+        if self.selected_character:
+            new_char = self.controller.duplicate_character(self.selected_character.id)
+            if new_char:
+                QMessageBox.information(
+                    self, 
+                    "Success", 
+                    f"Character '{new_char.name}' created successfully!"
+                )
+                self.load_characters()
+                self.character_updated.emit()
+            else:
+                QMessageBox.warning(self, "Error", "Could not duplicate character")
+
     def delete_character(self):
         if self.selected_character:
             self.controller.delete_character(self.selected_character.id)
@@ -67,5 +86,6 @@ class EditCharactersDialog(QDialog):
             self.character_form.clear()
             self.character_form.setDisabled(True)
             self.delete_button.setVisible(False)
+            self.duplicate_button.setVisible(False)
             self.load_characters()
             self.character_updated.emit()

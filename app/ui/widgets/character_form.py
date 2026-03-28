@@ -3,6 +3,8 @@ from PySide6.QtWidgets import (
     QSpinBox, QComboBox, QPushButton, QMessageBox
 )
 from app.infrastructure.db.models.enums import CharacterType
+from app.infrastructure.db.database import SessionLocal
+from app.services.character_service import CharacterService
 
 class CharacterForm(QDialog):
     def __init__(self, on_submit, parent=None):
@@ -35,6 +37,10 @@ class CharacterForm(QDialog):
         self.type_input = QComboBox()
         self.type_input.addItems([e.value for e in CharacterType])
 
+        self.folder_input = QComboBox()
+        self.folder_input.setEditable(True)
+        self.load_folders()
+
         self.form_layout.addRow("Name", self.name_input)
         self.form_layout.addRow("Max HP", self.max_hp_input)
         self.form_layout.addRow("Current HP", self.current_hp_input)
@@ -43,6 +49,7 @@ class CharacterForm(QDialog):
         self.form_layout.addRow("FORT", self.fort_def_input)
         self.form_layout.addRow("VOL", self.vol_def_input)
         self.form_layout.addRow("Type", self.type_input)
+        self.form_layout.addRow("Folder", self.folder_input)
 
         self.layout.addLayout(self.form_layout)
 
@@ -51,6 +58,18 @@ class CharacterForm(QDialog):
         self.layout.addWidget(self.submit_button)
 
         self.setLayout(self.layout)
+
+    def load_folders(self):
+        """Load existing folders and add 'Sin carpeta' option"""
+        db = SessionLocal()
+        service = CharacterService(db)
+        folders = service.get_folders()
+        db.close()
+        
+        self.folder_input.clear()
+        self.folder_input.addItem("Sin carpeta")
+        for folder in folders:
+            self.folder_input.addItem(folder)
 
     def submit(self):
         name = self.name_input.text()
@@ -67,6 +86,7 @@ class CharacterForm(QDialog):
             "fort_def": self.fort_def_input.value(),
             "vol_def": self.vol_def_input.value(),
             "type": self.type_input.currentText(),
+            "folder": self.folder_input.currentText(),
         }
 
         self.on_submit(data)
@@ -94,6 +114,14 @@ class CharacterForm(QDialog):
         else:
             self.type_input.setCurrentIndex(-1)
 
+        # Folder
+        if character.folder:
+            index = self.folder_input.findText(character.folder)
+            if index != -1:
+                self.folder_input.setCurrentIndex(index)
+            else:
+                self.folder_input.setEditText(character.folder)
+
     def set_spinbox_value(self, spinbox, value):
         if value is not None:
             spinbox.setValue(value)
@@ -109,3 +137,4 @@ class CharacterForm(QDialog):
         self.fort_def_input.clear()
         self.vol_def_input.clear()
         self.type_input.setCurrentIndex(-1)
+        self.folder_input.setCurrentIndex(0)

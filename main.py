@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QApplication
 from app.ui.config_window import ConfigWindow
 from app.ui.controllers.config_controller import ConfigController
 from app.infrastructure.db.database import init_db
+from app.infrastructure.db.migrations import run_migrations
 
 def run_app():
     app = QApplication(sys.argv)
@@ -13,6 +14,7 @@ def run_app():
 
 def main():
     init_db()
+    run_migrations()
     if len(sys.argv) > 1:
         # Ejecutar CLI
         from app.cli.cli_entrypoint import main as cli_main

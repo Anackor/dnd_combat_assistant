@@ -17,3 +17,6 @@ class ConfigController:
 
     def delete_character(self, character_id):
         self.character_service.delete(character_id)
+
+    def duplicate_character(self, character_id):
+        return self.character_service.duplicate_character(character_id)
